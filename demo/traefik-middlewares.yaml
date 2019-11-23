@@ -1,0 +1,46 @@
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirecthttps
+spec:
+  redirectScheme:
+    scheme: https
+#    permanent: true
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: admin-basic
+spec:
+  basicAuth:
+    secret: authsecret
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: authsecret
+  namespace: default
+# to create the user data create a file in this format testusers.txt
+# create user password with htpasswd -nb username password
+# then cat testusers.txt | base64
+# use the ouput to past below
+#  test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/
+#  test2:$apr1$d9hr9HBB$4HxwgUir3HP4EsggP/QNo0
+#  admin:$apr1$OBiHWhyu$P4IaVDw65RS7TbeGwTI4y.
+
+data:
+  users: |2
+    dGVzdDokYXByMSRINnVza2trVyRJZ1hMUDZld1RyU3VCa1RycUU4d2ovCnRlc3QyOiRhcHIxJGQ5
+    aHI5SEJCJDRIeHdnVWlyM0hQNEVzZ2dQL1FObzAKYWRtaW46JGFwcjEkT0JpSFdoeXUkUDRJYVZE
+    dzY1UlM3VGJlR3dUSTR5Lgp0cmFlZmlrLWFkbWluOiRhcHIxJG84MmNRL2Q5JEJYY1pBUWtCUlluMHNXT1o5OUprdjAK
+#    dGVzdDokYXByMSRINnVza2trVyRJZ1hMUDZld1RyU3VCa1RycUU4d2ovCnRlc3QyOiRhcHIxJGQ5
+#    aHI5SEJCJDRIeHdnVWlyM0hQNEVzZ2dQL1FObzAKYWRtaW46JGFwcjEkT0JpSFdoeXUkUDRJYVZE
+#    dzY1UlM3VGJlR3dUSTR5Lgo=
+
+
+#    dGVzdDokYXByMSRINnVza2trVyRJZ1hMUDZld1RyU3VCa1RycUU4d2ovCnRlc3QyOiRhcHIxJGQ5
+#    aHI5SEJCJDRIeHdnVWlyM0hQNEVzZ2dQL1FObzAK
+

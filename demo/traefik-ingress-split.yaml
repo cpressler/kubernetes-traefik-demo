@@ -1,0 +1,113 @@
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: simpleingressroute
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`monitork8s`) && PathPrefix(`/`)
+      middlewares:
+        - name: admin-basic
+      kind: Rule
+      services:
+        - name: traefik-admin-ui
+          port: 8080
+    - match: Host(`monitork8s.pressler.com`) && PathPrefix(`/`)
+      middlewares:
+        - name: admin-basic
+      kind: Rule
+      services:
+        - name: traefik-admin-ui
+          port: 8080
+    - match: Host(`monitork8s.local`) && PathPrefix(`/`)
+      middlewares:
+        - name: admin-basic
+      kind: Rule
+      services:
+        - name: traefik-admin-ui
+          port: 8080
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: simpleapproute
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`testk8s.local`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: whoami
+          port: 80
+      middlewares:
+        - name: redirecthttps
+    - match: Host(`whoami-demo.pressler.com`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: whoami
+          port: 80
+      middlewares:
+        - name: redirecthttps
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroutetls
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`monitork8s.pressler.com`, `monitork8s`, `monitork8s.local`) && PathPrefix(`/`)
+#    - match: Host(`monitork8s.pressler.com`) && PathPrefix(`/`)
+      middlewares:
+        - name: admin-basic
+      kind: Rule
+      services:
+        - name: traefik-admin-ui
+          port: 8080
+    - match: Host(`whoami-demo.pressler.com`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: whoami
+          port: 80
+    - match: Host(`testk8s.local`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: whoami
+          port: 80
+  tls:
+    certResolver: default
+
+
+---
+#[http.routers.redirecttohttps]
+#  entryPoints = ["web"]
+#  middlewares = ["redirecthttps"]
+#  rule = "HostRegexp(`{host:.+}`)"
+#  service = "noop"
+
+
+# FIXME NEED TO Figure out NOOP service backend
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: catchallredirect
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: HostRegexp(`{host:.+}`)
+      middlewares:
+        - name: redirecthttps
+      kind: Rule
+      services:
+#        - name: noop
+        - name: whoami
+          port: 80
