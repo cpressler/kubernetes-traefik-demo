@@ -14,9 +14,8 @@ kubectl  $1 get nodes
 kubectl  $1 get pods
 kubectl  $1 get services
 
-kubectl  $1 apply -f prereqs.yaml
 kubectl  $1 apply -f deployment.yaml
-kubectl  $1 apply -f service-lb.yaml
+kubectl  $1 apply -f service.yaml
 kubectl  $1 apply -f traefik-middlewares.yaml
 kubectl  $1 apply -f traefik-ingress-split.yaml
 

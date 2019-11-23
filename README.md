@@ -15,7 +15,7 @@ via the traefik-ingress-split.yaml file.
 The services file defines a Load Balancer type that create a load balancer. In the cloud that is a
 additional cost per month.
 
-**service-lb.yaml**
+**service.yaml**
 
 #### Deployments
 Next, the deployments, i.e. the actual pods behind the services. Again, one pod for Traefik, and one for the whoami app.  
@@ -40,11 +40,16 @@ kubectl apply -f traefik-middlewares.yaml
 
 #### traefik-middlewares.yaml
 
-**Create Kubernetes resources Sequence**
-
+**Create Kubernetes setup Sequence**   
+This sets up one time stuff such as loading initial CRD from Traefik and installing a Load Balancer
 ```bash
-kubectl apply -f prereqs.yaml
-
+kubectl apply -f prereqs.yaml        
+kubectl apply -f load-balancer.yaml
+```
+**Create Kubernetes resources Sequence**   
+This section will do the actual deployment of code and assign a service layer to that as well as configure the 
+Traefik ingress Routers and Middleware
+```bash
 kubectl apply -f service.yaml
 kubectl apply -f deployment.yaml
 kubectl apply -f traefik-middlewares.yaml
@@ -108,9 +113,13 @@ data:
   username: dHJhZWZpay1hZG1pbg==    # base64 encoded
   password: Z2VuZXJpYw==            # base64 encoded
  ```   
-
+#### Using the bash scripts to load initial setup data 
+use
+```bash
+demo/init.sh  <kubeconfig file>
+demo/un-init.sh   <kubeconfig file>
+```
 #### Using the bash scripts to create kubernetes deployments
-
 use
 ```bash
 demo/installapp.sh  <kubeconfig file>
@@ -154,5 +163,4 @@ kubectl --kubeconfig="/Users/myusername/.kube/k8s-vb-config.yaml" get nodes
 
 https://dev.to/mstrsobserver/simple-kubernetes-setup-with-traefik-2-0-0-and-dok8s-38ep
 https://github.com/vranystepan/traefik2-dok8s-example-01
-
 https://docs.traefik.io/user-guides/crd-acme/
